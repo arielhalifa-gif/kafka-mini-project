@@ -1,13 +1,22 @@
 import json
 import uuid
 import models
+from models import User
 
 from confluent_kafka import Producer
 
 
-def producer_kafka(user: dict):
+def producer_kafka(user: User):
     producer_config = {
         "bootstrap.servers": "localhost:9092"
+    }
+
+    user_value = {
+        'full_name': user.full_name,
+        'email': user.email,
+        'age': user.age,
+        'phone': user.phone,
+        'city': user.city
     }
 
     producer = Producer(producer_config)
@@ -21,7 +30,7 @@ def producer_kafka(user: dict):
 
     # user = models.User(full_name="moshe", email="moshe@gmail.com", age=20, phone= "0541234567", city="yerushalaim")
 
-    value = json.dumps(user).encode("utf-8")
+    value = json.dumps(user_value).encode("utf-8")
 
     producer.produce(
         topic="users",
