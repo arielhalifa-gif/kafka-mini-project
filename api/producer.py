@@ -4,27 +4,29 @@ import models
 
 from confluent_kafka import Producer
 
-producer_config = {
-    "bootstrap.servers": "localhost:9092"
-}
 
-producer = Producer(producer_config)
+def producer_kafka(user: dict):
+    producer_config = {
+        "bootstrap.servers": "localhost:9092"
+    }
 
-def delivery_report(err, msg):
-    if err:
-        print(f"❌ Delivery failed: {err}")
-    else:
-        print(f"✅ Delivered {msg.value().decode("utf-8")}")
-        print(f"✅ Delivered to {msg.topic()} : partition {msg.partition()} : at offset {msg.offset()}")
+    producer = Producer(producer_config)
 
-user = models.User()
+    def delivery_report(err, msg):
+        if err:
+            print(f"❌ Delivery failed: {err}")
+        else:
+            print(f"✅ Delivered {msg.value().decode("utf-8")}")
+            print(f"✅ Delivered to {msg.topic()} : partition {msg.partition()} : at offset {msg.offset()}")
 
-value = json.dumps(user).encode("utf-8")
+    # user = models.User(full_name="moshe", email="moshe@gmail.com", age=20, phone= "0541234567", city="yerushalaim")
 
-producer.produce(
-    topic="orders",
-    value=value,
-    callback=delivery_report
-)
+    value = json.dumps(user).encode("utf-8")
 
-producer.flush()
+    producer.produce(
+        topic="users",
+        value=value,
+        callback=delivery_report
+    )
+
+    producer.flush()
